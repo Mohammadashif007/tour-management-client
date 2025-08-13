@@ -76,7 +76,7 @@ export default function Component() {
                                                 href={link.href}
                                                 className="py-1.5"
                                             >
-                                                {link.label}
+                                                <Link to={link.label}></Link>
                                             </NavigationMenuLink>
                                         </NavigationMenuItem>
                                     ))}
@@ -86,12 +86,12 @@ export default function Component() {
                     </Popover>
                     {/* Main nav */}
                     <div className="flex items-center gap-6">
-                        <a
-                            href="#"
+                        <Link
+                            to={"/"}
                             className="text-primary hover:text-primary/90"
                         >
                             <Logo></Logo>
-                        </a>
+                        </Link>
                         {/* Navigation menu */}
                         <NavigationMenu className="max-md:hidden">
                             <NavigationMenuList className="gap-2">
@@ -114,16 +114,8 @@ export default function Component() {
                 {/* Right side */}
                 <div className="flex items-center gap-2">
                     <ModeToggle></ModeToggle>
-                    <Button
-                        asChild
-                        variant="ghost"
-                        size="sm"
-                        className="text-sm"
-                    >
-                        <a href="#">Sign In</a>
-                    </Button>
-                    <Button asChild size="sm" className="text-sm">
-                        <a href="#">Get Started</a>
+                    <Button asChild className="text-sm">
+                        <Link to={"/login"}>Login</Link>
                     </Button>
                 </div>
             </div>
