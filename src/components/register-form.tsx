@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import {
     Form,
     FormControl,
@@ -15,7 +15,8 @@ import { Input } from "./ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Password from "./ui/Password";
-
+import { useRegisterMutation } from "@/redux/features/auth/auth.api";
+import { toast } from "sonner";
 
 const registerSchema = z
     .object({
@@ -35,6 +36,8 @@ export function RegisterForm({
     className,
     ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
+    const [register] = useRegisterMutation();
+    const navigate = useNavigate();
 
     const form = useForm<z.infer<typeof registerSchema>>({
         resolver: zodResolver(registerSchema),
@@ -48,6 +51,19 @@ export function RegisterForm({
 
     const onSubmit = async (data: z.infer<typeof registerSchema>) => {
         console.log(data);
+        const userInfo = {
+            name: data.name,
+            email: data.email,
+            password: data.password,
+        };
+        try {
+            const result = await register(userInfo).unwrap();
+            console.log(result);
+            toast.success("User created successfully");
+            navigate("/verify");
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
