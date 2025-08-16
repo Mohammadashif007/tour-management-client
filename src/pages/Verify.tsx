@@ -21,6 +21,7 @@ import {
     InputOTPGroup,
     InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { cn } from "@/lib/utils";
 import {
     useSendOtpMutation,
     useVerifyOtpMutation,
@@ -29,7 +30,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Dot } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation } from "react-router";
 import { toast } from "sonner";
 import z from "zod";
 
@@ -47,25 +48,25 @@ const Verify = () => {
         },
     });
     const location = useLocation();
-    const navigate = useNavigate();
     const [email] = useState(location.state);
     const [confirmed, setConfirmed] = useState(false);
     const [sendOtp] = useSendOtpMutation();
     const [verifyOtp] = useVerifyOtpMutation();
-    const [timer, setTimer] = useState(120);
+    const [timer, setTimer] = useState(5);
 
-    const handleConfirm = async () => {
-        // const toastId = toast.loading("Sending OTP");
-        setConfirmed(true);
-        // try {
-        //     const res = await sendOtp({ email: email }).unwrap();
-        //     if (res.success) {
+    const handleSendOtp = async () => {
+        const toastId = toast.loading("Sending OTP");
 
-        //         toast.success("OTP Sent", { id: toastId });
-        //     }
-        // } catch (error) {
-        //     console.log(error);
-        // }
+        try {
+            const res = await sendOtp({ email: email }).unwrap();
+            if (res.success) {
+                toast.success("OTP Sent", { id: toastId });
+                setConfirmed(true);
+                setTimer(5);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     const onSubmit = async (data: z.infer<typeof FormSchema>) => {
@@ -94,11 +95,15 @@ const Verify = () => {
 
     // ! useEffect for timer
     useEffect(() => {
+        if (!email || !confirmed) {
+            return;
+        }
         const timerId = setInterval(() => {
             if (email && confirmed) {
                 setTimer((prev) => (prev > 0 ? prev - 1 : 0));
             }
         }, 1000);
+        return () => clearInterval(timerId);
     }, [email, confirmed]);
 
     return (
@@ -165,9 +170,20 @@ const Verify = () => {
                                                 </InputOTP>
                                             </FormControl>
                                             <FormDescription>
-                                                <Button variant="link">
-                                                    Resend OTP
-                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    variant="link"
+                                                    onClick={handleSendOtp}
+                                                    disabled={timer !== 0}
+                                                    className={cn("p-0 m-0", {
+                                                        "cursor-pointer":
+                                                            timer === 0,
+                                                        "text-gray-500":
+                                                            timer !== 0,
+                                                    })}
+                                                >
+                                                    Resend OTP :
+                                                </Button>{" "}
                                                 {timer}
                                             </FormDescription>
                                             <FormMessage />
@@ -192,7 +208,7 @@ const Verify = () => {
                         </CardDescription>
                     </CardHeader>
                     <CardFooter className="flex gap-2 justify-end">
-                        <Button onClick={handleConfirm} className="w-[300px]">
+                        <Button onClick={handleSendOtp} className="w-[300px]">
                             Submit
                         </Button>
                     </CardFooter>
