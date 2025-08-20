@@ -1,13 +1,14 @@
 import Logo from "@/assets/icons/logo";
 
-
 const Footer = () => {
     return (
-        <footer>
-            <div className="mx-auto container space-y-8 px-6 py-16 ">
+        <footer className="">
+            <div className="container mx-auto  space-y-8 px-4 py-16">
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                     <div>
-                        <Logo></Logo>
+                        <div className="text-foreground">
+                            <Logo></Logo>
+                        </div>
 
                         <p className="mt-4 max-w-xs text-muted-foreground">
                             Lorem ipsum dolor, sit amet consectetur adipisicing
@@ -317,7 +318,7 @@ const Footer = () => {
                     </div>
                 </div>
 
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                     &copy; 2022. Company Name. All rights reserved.
                 </p>
             </div>
