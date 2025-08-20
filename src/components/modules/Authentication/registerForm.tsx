@@ -27,7 +27,7 @@ const formSchema = z.object({
 export function RegisterForm({
     className,
     ...props
-}: React.ComponentProps<"form">) {
+}: React.HTMLAttributes<HTMLDivElement>) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
