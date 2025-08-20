@@ -15,13 +15,14 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import Password from "@/components/ui/password";
 
 const formSchema = z.object({
     name: z.string().min(3, { error: "Name is too short" }).max(50),
     email: z.email(),
     password: z.string().min(6, { error: "Password is too short" }),
     confirmPassword: z.string().min(6, {error: "Confirm password is too short"}),
-});
+}).refine((data) => data.password === data.confirmPassword, {message: "Password don't match", path: ["confirmPassword"]});
 
 export function RegisterForm({
     className,
@@ -101,11 +102,7 @@ export function RegisterForm({
                                 <FormItem>
                                     <FormLabel>Password</FormLabel>
                                     <FormControl>
-                                        <Input
-                                        type="password"
-                                            placeholder="*******"
-                                            {...field}
-                                        />
+                                       <Password {...field}></Password>
                                     </FormControl>
                                     <FormDescription className="sr-only">
                                         This is your public display name.
@@ -121,11 +118,7 @@ export function RegisterForm({
                                 <FormItem>
                                     <FormLabel>Confirm Password</FormLabel>
                                     <FormControl>
-                                        <Input
-                                        type="password"
-                                            placeholder="*******"
-                                            {...field}
-                                        />
+                                       <Password {...field}></Password>
                                     </FormControl>
                                     <FormDescription className="sr-only">
                                         This is your public display name.
