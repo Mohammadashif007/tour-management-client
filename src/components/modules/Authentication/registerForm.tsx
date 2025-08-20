@@ -16,13 +16,22 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Password from "@/components/ui/password";
+import { useRegisterMutation } from "@/redux/features/auth/auth.api";
+import { toast } from "sonner";
 
-const formSchema = z.object({
-    name: z.string().min(3, { error: "Name is too short" }).max(50),
-    email: z.email(),
-    password: z.string().min(6, { error: "Password is too short" }),
-    confirmPassword: z.string().min(6, {error: "Confirm password is too short"}),
-}).refine((data) => data.password === data.confirmPassword, {message: "Password don't match", path: ["confirmPassword"]});
+const formSchema = z
+    .object({
+        name: z.string().min(3, { error: "Name is too short" }).max(50),
+        email: z.email(),
+        password: z.string().min(6, { error: "Password is too short" }),
+        confirmPassword: z
+            .string()
+            .min(6, { error: "Confirm password is too short" }),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: "Password don't match",
+        path: ["confirmPassword"],
+    });
 
 export function RegisterForm({
     className,
@@ -38,8 +47,22 @@ export function RegisterForm({
         },
     });
 
-    const onSubmit = (data: z.infer<typeof formSchema>) => {
-        console.log(data);
+    const [register] = useRegisterMutation();
+
+    const onSubmit = async (data: z.infer<typeof formSchema>) => {
+        const userInfo = {
+            name: data.name,
+            email: data.email,
+            password: data.password,
+        };
+
+        try {
+            const result = await register(userInfo).unwrap();
+            console.log(result);
+            toast.success("User created successfully");
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
@@ -83,7 +106,7 @@ export function RegisterForm({
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
                                         <Input
-                                        type="email"
+                                            type="email"
                                             placeholder="e.g., johnwick@ballerina.com"
                                             {...field}
                                         />
@@ -102,7 +125,7 @@ export function RegisterForm({
                                 <FormItem>
                                     <FormLabel>Password</FormLabel>
                                     <FormControl>
-                                       <Password {...field}></Password>
+                                        <Password {...field}></Password>
                                     </FormControl>
                                     <FormDescription className="sr-only">
                                         This is your public display name.
@@ -118,7 +141,7 @@ export function RegisterForm({
                                 <FormItem>
                                     <FormLabel>Confirm Password</FormLabel>
                                     <FormControl>
-                                       <Password {...field}></Password>
+                                        <Password {...field}></Password>
                                     </FormControl>
                                     <FormDescription className="sr-only">
                                         This is your public display name.
